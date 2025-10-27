@@ -2374,7 +2374,7 @@ impl ProcessId {
             system.refresh_process(pid);
 
             if let Some(process) = system.process(pid) {
-                process.kill();
+                process.kill_with(sysinfo::Signal::Term);
                 self.mark_as_stopped();
                 return true;
             }

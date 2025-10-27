@@ -18,8 +18,11 @@ pub struct Stop {
     /// Name of the dataflow that should be stopped
     #[clap(long)]
     name: Option<String>,
+    /// Force kill the dataflow without a graceful shutdown
+    #[clap(long, short, group = "grace")]
+    force: bool,
     /// Kill the dataflow if it doesn't stop after the given duration
-    #[clap(long, value_name = "DURATION")]
+    #[clap(long, value_name = "DURATION", group = "grace")]
     #[arg(value_parser = parse)]
     grace_duration: Option<Duration>,
     /// Address of the dora coordinator
@@ -36,10 +39,15 @@ impl Executable for Stop {
         let mut session =
             connect_to_coordinator((self.coordinator_addr, self.coordinator_port).into())
                 .wrap_err("could not connect to dora coordinator")?;
+        let grace_duration = if self.force {
+            Some(Duration::from_secs(0))
+        } else {
+            self.grace_duration
+        };
         match (self.uuid, self.name) {
-            (Some(uuid), _) => stop_dataflow(uuid, self.grace_duration, &mut *session),
-            (None, Some(name)) => stop_dataflow_by_name(name, self.grace_duration, &mut *session),
-            (None, None) => stop_dataflow_interactive(self.grace_duration, &mut *session),
+            (Some(uuid), _) => stop_dataflow(uuid, grace_duration, &mut *session),
+            (None, Some(name)) => stop_dataflow_by_name(name, grace_duration, &mut *session),
+            (None, None) => stop_dataflow_interactive(grace_duration, &mut *session),
         }
     }
 }
