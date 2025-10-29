@@ -22,7 +22,7 @@ use crate::{
     formatting::OutputFormat,
 };
 
-/// Watch topic data in terminal.
+/// Display topic data in real-time
 #[derive(Debug, Args)]
 pub struct Watch {
     #[clap(flatten)]

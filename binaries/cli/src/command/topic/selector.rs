@@ -16,6 +16,7 @@ use dora_message::{
 use eyre::{Context, bail};
 use uuid::Uuid;
 
+/// Common arguments for topic inspection commands
 #[derive(Debug, clap::Args)]
 pub struct DataflowSelector {
     /// Identifier of the dataflow
