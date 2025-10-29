@@ -15,7 +15,7 @@ use uuid::Uuid;
 
 use crate::command::{Executable, default_tracing, topic::selector::InspectSelector};
 
-/// Watch topic data in terminal.
+/// Display topic data in real-time
 #[derive(Debug, Args)]
 pub struct Watch {
     #[clap(flatten)]

@@ -11,6 +11,7 @@ use uuid::Uuid;
 
 use crate::command::{default_tracing, topic::selector::InspectSelector, Executable};
 
+/// Display the publishing rate (Hz) of topics
 #[derive(Debug, clap::Args)]
 pub struct Hz {
     #[clap(flatten)]

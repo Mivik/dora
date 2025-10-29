@@ -13,6 +13,7 @@ use dora_message::{
 use eyre::{bail, Context};
 use uuid::Uuid;
 
+/// Common arguments for topic inspection commands
 #[derive(Debug, clap::Args)]
 pub struct InspectSelector {
     /// Identifier of the dataflow
