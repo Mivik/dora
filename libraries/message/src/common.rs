@@ -250,13 +250,15 @@ where
     T: serde::Serialize,
 {
     pub fn serialize(&self) -> Vec<u8> {
-        bincode::serialize(self).unwrap()
+        bincode::serde::encode_to_vec(self, bincode::config::legacy()).unwrap()
     }
 }
 
 impl Timestamped<InterDaemonEvent> {
     pub fn deserialize_inter_daemon_event(bytes: &[u8]) -> eyre::Result<Self> {
-        bincode::deserialize(bytes).wrap_err("failed to deserialize InterDaemonEvent")
+        bincode::serde::decode_from_slice(bytes, bincode::config::legacy())
+            .wrap_err("failed to deserialize InterDaemonEvent")
+            .map(|(event, _)| event)
     }
 }
 

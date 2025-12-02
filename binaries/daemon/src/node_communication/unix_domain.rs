@@ -72,9 +72,9 @@ impl Connection for UnixConnection {
                 }
             },
         };
-        bincode::deserialize(&raw)
+        bincode::serde::decode_from_slice(&raw, bincode::config::legacy())
             .wrap_err("failed to deserialize DaemonRequest")
-            .map(Some)
+            .map(|v| Some(v.0))
     }
 
     async fn send_reply(&mut self, message: DaemonReply) -> eyre::Result<()> {
@@ -82,8 +82,8 @@ impl Connection for UnixConnection {
             // don't send empty replies
             return Ok(());
         }
-        let serialized =
-            bincode::serialize(&message).wrap_err("failed to serialize DaemonReply")?;
+        let serialized = bincode::serde::encode_to_vec(&message, bincode::config::legacy())
+            .wrap_err("failed to serialize DaemonReply")?;
         socket_stream_send(&mut self.0, &serialized)
             .await
             .wrap_err("failed to send DaemonReply")?;

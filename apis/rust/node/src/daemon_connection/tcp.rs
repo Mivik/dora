@@ -33,7 +33,8 @@ fn send_message(
     connection: &mut TcpStream,
     message: &Timestamped<DaemonRequest>,
 ) -> eyre::Result<()> {
-    let serialized = bincode::serialize(&message).wrap_err("failed to serialize DaemonRequest")?;
+    let serialized = bincode::serde::encode_to_vec(message, bincode::config::legacy())
+        .wrap_err("failed to serialize DaemonRequest")?;
     tcp_send(connection, &serialized).wrap_err("failed to send DaemonRequest")?;
     Ok(())
 }
@@ -57,9 +58,9 @@ fn receive_reply(
             },
         };
     match serializer {
-        Serializer::Bincode => bincode::deserialize(&raw)
+        Serializer::Bincode => bincode::serde::decode_from_slice(&raw, bincode::config::legacy())
             .wrap_err("failed to deserialize DaemonReply")
-            .map(Some),
+            .map(|v| Some(v.0)),
         Serializer::SerdeJson => serde_json::from_slice(&raw)
             .wrap_err("failed to deserialize DaemonReply")
             .map(Some),

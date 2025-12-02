@@ -86,7 +86,8 @@ impl ShmemChannel {
     where
         T: Serialize + std::fmt::Debug,
     {
-        let msg = bincode::serialize(value).wrap_err("failed to serialize value")?;
+        let msg = bincode::serde::encode_to_vec(value, bincode::config::legacy())
+            .wrap_err("failed to serialize value")?;
 
         self.send_raw(&msg)
     }
@@ -155,9 +156,9 @@ impl ShmemChannel {
         // finally read the data
         let value_raw = unsafe { slice::from_raw_parts(self.data(), msg_len) };
 
-        bincode::deserialize(value_raw)
+        bincode::serde::decode_from_slice(value_raw, bincode::config::legacy())
             .wrap_err("failed to deserialize value")
-            .map(|v| Some(v))
+            .map(|v| Some(v.0))
     }
 
     fn disconnect(&self) -> &AtomicBool {

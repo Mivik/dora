@@ -141,7 +141,7 @@ async fn receive_message(
             }
         },
     };
-    bincode::deserialize(&raw)
+    bincode::serde::decode_from_slice(&raw, bincode::config::legacy())
         .wrap_err("failed to deserialize DaemonRequest")
-        .map(Some)
+        .map(|v| Some(v.0))
 }
