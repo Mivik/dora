@@ -4,7 +4,7 @@ use std::{borrow::Cow, collections::BTreeMap};
 use aligned_vec::{AVec, ConstAlign};
 use chrono::{DateTime, Utc};
 use eyre::Context as _;
-use serde::{Deserialize, Deserializer};
+use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::{BuildId, DataflowId, daemon_to_daemon::InterDaemonEvent, id::NodeId};
@@ -194,6 +194,12 @@ pub enum NodeExitStatus {
     ExitCode(i32),
     Signal(i32),
     Unknown,
+}
+
+impl NodeExitStatus {
+    pub fn is_success(&self) -> bool {
+        matches!(self, NodeExitStatus::Success)
+    }
 }
 
 impl From<Result<std::process::ExitStatus, std::io::Error>> for NodeExitStatus {
